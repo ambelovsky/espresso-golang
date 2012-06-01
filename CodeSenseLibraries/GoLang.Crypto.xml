@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codesense version="1.0">
+	
+	<!--DOM variables-->
+	<set name="io.7th.golang.crypto-support.variables">
+		<completion string="crypto" />
+		<completion string="md5" />
+	</set>
+	
+	<set name="io.7th.golang.crypto-support.methods">
+		<behavior>
+			<append-dynamic>
+				<matched-suffix>(\()|[^(]</matched-suffix>
+				<transform-into>(?1::(\))</transform-into>
+			</append-dynamic>
+		</behavior>
+		<completion string="Available"/>
+		<completion string="New"/>
+		<completion string="Size"/>
+	</set>
+	
+	<!--Crypto-->
+	
+	<set name="io.7th.golang.crypto-support.crypto.properties">
+		<completion string="Hash" />
+		
+		<completion string="MD4" />
+		<completion string="MD5" />
+		<completion string="SHA1" />
+		<completion string="SHA224" />
+		<completion string="SHA256" />
+		<completion string="SHA384" />
+		<completion string="SHA512" />
+		<completion string="MD5SHA1" />
+		<completion string="RIPEMD160" />
+		
+		<completion string="PrivateKey" />
+	</set>
+	
+	<set name="io.7th.golang.crypto-support.crypto.methods">
+		<behavior>
+			<append-dynamic>
+				<matched-suffix>(\()|[^(]</matched-suffix>
+				<transform-into>(?1::(\))</transform-into>
+			</append-dynamic>
+		</behavior>
+		<completion string="RegisterHash">
+			<behavior>
+				<append-dynamic>
+					<matched-suffix>(\()|[^(]</matched-suffix>
+					<transform-into>(?1::(${1:Hash}, ${2:HashFunction}\))</transform-into>
+				</append-dynamic>
+			</behavior>
+		</completion>
+	</set>
+	
+	<!--Md5-->
+	
+	<set name="io.7th.golang.crypto-support.md5.properties">
+		<completion string="BlockSize"/>
+		<completion string="Size"/>
+	</set>
+	
+	<set name="io.7th.golang.crypto-support.md5.methods">
+		<behavior>
+			<append-dynamic>
+				<matched-suffix>(\()|[^(]</matched-suffix>
+				<transform-into>(?1::(\))</transform-into>
+			</append-dynamic>
+		</behavior>
+		<completion string="New"/>
+	</set>
+	
+</codesense>

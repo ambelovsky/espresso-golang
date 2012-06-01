@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <language id="io.7th.golang">
+        <root-zone>language-root.golang</root-zone>
+        <name>GoLang</name>
+        <detectors>
+            <extension>go</extension>
+        </detectors>
+        
+        <default-extension>go</default-extension>
+    </language>
+</settings> 

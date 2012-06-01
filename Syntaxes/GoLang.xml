@@ -1,0 +1,555 @@
+<?xml version="1.0"?>
+<syntax name="language-root.golang">
+	<zones>
+		<!-- This include pattern is not strictly necessary for some languages, but it provides two useful side effects:
+		
+		1) Editing in Espresso is easier because nesting zones in collections make the Navigator more easily navigable
+		
+		2) It allows constructing subsets of the language for inclusion in zones or other languages using standard names
+		-->
+		<include collection="comments" />
+		<include collection="strings" />
+		<include collection="functions" />
+		<include collection="classes" />
+		<include collection="switch-blocks" />
+		<include collection="keywords" />
+		<include collection="constants" />		
+		<include collection="numbers" />
+		<include collection="regex" />
+		<include collection="operators" />
+		<include collection="variables" />
+		<include collection="punctuation" />
+	</zones>
+	
+	<library>
+		<!--Comments-->
+		<collection name="comments">
+			<!-- Inline documentation style comments -->
+			<zone name="comment.block.documentation">
+				<starts-with>
+					<expression>/\*(?!\*/)[*!](?:\*(?!/$)|/(?!$))*</expression>
+					<capture number="0" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>\*/</expression>
+					<capture number="0" name="punctuation.definition.end"/>
+				</ends-with>
+				<subzones>
+					<zone name="markup.link">
+						<expression>(?i)\b(?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()&lt;>]+|\(([^\s()&lt;>]+|(\([^\s()&lt;>]+\)))*\))+(?:\(([^\s()&lt;>]+|(\([^\s()&lt;>]+\)))*\)|[^\s`!()\[\]{};:'".,&lt;>?«»“”‘’])</expression>
+					</zone>
+					<zone name="keyword">
+						<expression>(?i)(?&lt;=\s|^)@[a-z]+\b</expression>
+					</zone>
+				</subzones>
+			</zone>
+			<!-- This one is a bit weird; it's technically a line comment, but because it spans multiple lines we need to make the system think of it like a block comment -->
+			<zone name="comment.block.line-by-line.documentation">
+				<starts-with>
+					<expression>(//([!/])/*)</expression>
+					<capture number="1" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>^(?!\s*//\2)</expression>
+				</ends-with>
+			</zone>
+			<zone name="comment.line.documentation">
+				<expression>(//[!/]).*$[\n\r]*</expression>
+				<capture number="1" name="punctuation.definition.begin"/>
+			</zone>
+			<!-- Bookmark comments -->
+			<!-- A common pattern when commenting is to use comment bookmarks that consist of a comment with a number of repeating characters to break up the document, followed by some text as the heading; this tries to captures that use-case scenario in a flexible way. The single exclamation point with a space before it is Coda's bookmark syntax -->
+			<zone name="comment.block.bookmark">
+				<starts-with>
+					<expression>/\*\s*([*#=~+-]{3,}(?!/)|!)</expression>
+					<capture number="0" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>\*/</expression>
+					<capture number="0" name="punctuation.definition.end"/>
+				</ends-with>
+			</zone>
+			<zone name="comment.line.bookmark">
+				<expression>(//)\s*(?:[*#=~+-]{3,}|!).*$[\n\r]*</expression>
+				<capture number="1" name="punctuation.definition.begin"/>
+			</zone>
+			<zone name="comment.line.task">
+				<starts-with>
+					<expression>(//)(?=.*?\b(?i:FIX ?ME|TODO)\b)</expression>
+					<capture number="1" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>$[\n\r]*</expression>
+				</ends-with>
+				<subzones>
+					<zone name="keyword">
+						<expression>\b(?i:FIX ?ME|TODO)\b</expression>
+					</zone>
+				</subzones>
+			</zone>
+			<!-- Standard comments -->
+			<zone name="comment.block">
+				<starts-with>
+					<expression>/\*</expression>
+					<capture number="0" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>\*/</expression>
+					<capture number="0" name="punctuation.definition.end"/>
+				</ends-with>
+			</zone>
+			<zone name="comment.line">
+				<expression>(//).*$[\n\r]*</expression>
+				<capture number="1" name="punctuation.definition.begin"/>
+			</zone>
+		</collection>
+		
+		<!--Strings-->
+		<collection name="strings">
+			<!--Methods (functions in objects)-->
+			<!-- This is not strictly necessary for itemizers (they are covered by the x-assignment zone), but it makes the syntax coloring MUCH nicer when you can highlight every function name, regardless of where it lives relative to the function definition -->
+			<zone>
+				<expression>(?&lt;=^|,|\{)\s*(((')((?:[^']|\\')+?)((?&lt;!\\)'))\s*(:)\s*(function))\s*(\()</expression>
+				<capture number="1" name="variable.property.function.definition.x-assignment"/>
+				<capture number="2" name="string.quoted.single"/>
+				<capture number="3" name="punctuation.definition.begin"/>
+				<capture number="4" name="name">
+					<subzones>
+						<include collection="character-escapes" />
+					</subzones>
+				</capture>
+				<capture number="5" name="punctuation.definition.end"/>
+				<capture number="6" name="operator.assignment"/>
+				<capture number="7" name="keyword.storage.type"/>
+				<capture number="8" name="punctuation.brace.round.open"/>
+			</zone>
+			<zone>
+				<expression>(?&lt;=^|,|\{)\s*(((")((?:[^"]|\\")+?)((?&lt;!\\)"))\s*(:)\s*(function))\s*(\()</expression>
+				<capture number="1" name="variable.property.function.definition.x-assignment"/>
+				<capture number="2" name="string.quoted.double"/>
+				<capture number="3" name="punctuation.definition.begin"/>
+				<capture number="4" name="name">
+					<subzones>
+						<include collection="character-escapes" />
+					</subzones>
+				</capture>
+				<capture number="5" name="punctuation.definition.end"/>
+				<capture number="6" name="operator.assignment"/>
+				<capture number="7" name="keyword.storage.type"/>
+				<capture number="8" name="punctuation.brace.round.open"/>
+			</zone>
+			<!--Properties (within object literals)-->
+			<zone>
+				<expression>(?&lt;=^|,|\{)\s*(((')((?:[^']|\\')+?)((?&lt;!\\)'))\s*(:))</expression>
+				<capture number="1" name="variable.property.x-assignment"/>
+				<capture number="2" name="string.quoted.single"/>
+				<capture number="3" name="punctuation.definition.begin"/>
+				<capture number="4" name="name">
+					<subzones>
+						<include collection="character-escapes" />
+					</subzones>
+				</capture>
+				<capture number="5" name="punctuation.definition.end"/>
+				<capture number="6" name="operator.assignment"/>
+			</zone>
+			<!--Standard strings-->
+			<zone name="string.quoted.single">
+				<starts-with>
+					<expression>'</expression>
+					<capture number="0" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>'</expression>
+					<capture number="0" name="punctuation.definition.end"/>
+				</ends-with>
+				<subzones>
+					<include collection="character-escapes" />
+				</subzones>
+			</zone>
+			<include collection="json-strings" />
+		</collection>
+		
+		<!--Character Escapes-->
+		<collection name="character-escapes">
+			<zone name="constant.character.escape">
+				<expression>(\\)(x\h{2}|[0-2][0-7]{,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.)</expression>
+				<capture number="1" name="punctuation.escape.backslash"/>
+			</zone>
+		</collection>
+		
+		<!--All Functions-->
+		<collection name="functions">
+			<!-- doSomething: function(...) { ... } -->
+			<zone>
+				<expression>(([a-zA-Z_$][\w$]*)\s*(?:((/\*).*?(\*/))\s*)?(:)\s*(function))\s*(\()</expression>
+				<capture number="1" name="variable.property.function.definition.x-assignment"/>
+				<capture number="2" name="name"/>
+				<capture number="3" name="comment.block"/>
+				<capture number="4" name="punctuation.definition.begin"/>
+				<capture number="5" name="punctuation.definition.end"/>
+				<capture number="6" name="operator.assignment"/>
+				<capture number="7" name="keyword.storage.type"/>
+				<capture number="8" name="punctuation.brace.round.open"/>
+			</zone>
+			
+			<!-- someObject.doSomething = function(...) ... -->
+			<zone>
+				<expression>((?:(var)\s+)?([a-zA-Z_$][\w$]*)\s*(=)\s*(function))\s*(\()</expression>
+				<capture number="1" name="variable.function.definition.x-assignment"/>
+				<capture number="2" name="keyword.storage.type"/>
+				<capture number="3" name="name"/>
+				<capture number="4" name="operator.assignment"/>
+				<capture number="5" name="keyword.storage.type"/>
+				<capture number="6" name="punctuation.brace.round.open"/>
+			</zone>
+			<zone>
+				<expression>(([a-zA-Z_$][\w$.]+)\s*(=)\s*(function))\s*(\()</expression>
+				<capture number="1" name="variable.function.definition.x-assignment"/>
+				<capture number="2" name="accessor-path.name">
+					<subzones>
+						<include collection="variables" />
+					</subzones>
+				</capture>
+				<capture number="3" name="operator.assignment"/>
+				<capture number="4" name="keyword.storage.type"/>
+				<capture number="5" name="punctuation.brace.round.open"/>
+			</zone>
+			
+			<!-- function doSomething(...) ... -->
+			<zone>
+				<expression>\b((function)\s+([a-zA-Z_$][\w$]*)\s*)(\()</expression>
+				<capture number="1" name="function.definition"/>
+				<capture number="2" name="keyword.storage.type"/>
+				<capture number="3" name="name"/>
+				<capture number="4" name="punctuation.brace.round.open"/>
+			</zone>
+			
+			<!-- function() { ... } -->
+			<zone>
+				<expression>\b((function)\s*)(\()</expression>
+				<capture number="1" name="function.definition.anonymous"/>
+				<capture number="2" name="keyword.storage.type"/>
+				<capture number="3" name="punctuation.brace.round.open"/>
+			</zone>
+		</collection>
+		
+		<!--Classes-->
+		<collection name="classes">
+			<zone name="class.constructor">
+				<expression>\b(new)\s+([a-zA-Z_$][\w$.]*)</expression>
+				<capture number="1" name="keyword.operator.new"/>
+				<capture number="2" name="variable.class"/>
+			</zone>
+		</collection>
+		
+		<!--Switch blocks-->
+		<collection name="switch-blocks">
+			<!-- FIXME: this is a bad implementation of case statements.
+				 
+				 The problem is how to detect the end of the case statement, since "break;" is optional and the end of the switch block cuts things off. When there is any closing curly brace within the block that is not contained within some parent syntax zone, the case block gets cut off early, which of course wreaks havoc with the following itemizers. Leaving the } out of the ends-with lookahead is not an option, because the case statement could easily eat the rest of the document.
+				 
+				 This solution gets around the problem by wrapping all { } blocks in an "x-item-block" zone, neatly capturing everything except the closing } for the switch. However, the side effect of this is that nothing except for comments will be itemized within a case statement, which could be hugely problematic for some coding designs (for instance, if a huge switch statement wraps a bunch of advanced logic).
+				 
+				 The obvious alternative is to use x-item-block universally, and modify the itemizers. However, this results in even worse behavior because it necessitates using a single <selector> instead of <start-selector> and <end-selector>, and <selector> does not support itemizer-firstused. As a result, selecting the itemizer only selects the {...} block, leaving the function name/control keywords/etc. unselected.
+				 
+				 A middle ground would be to implement special x-item-block itemizers for case statements, but then itemizers outside case statements and those inside behave differently which sucks.
+			-->
+			<!-- Switch case statements are blocked together because otherwise they are impossible to capture in itemizers (thanks to optional break keyword) -->
+			<zone name="x-item-block.case">
+				<starts-with>
+					<expression>(?:((case)\s+?('(?:[^']|\\')+?(?&lt;!\\)'|"(?:[^"]|\\")+?(?&lt;!\\)"|.+?)|(default)))\s*(:|;)</expression>
+					<capture number="1" name="x-item-start" />
+					<capture number="2" name="keyword.control"/>
+					<capture number="3" name="parameters">
+						<subzones>
+							<include collection="comments" />
+							<include collection="strings" />
+							<include collection="keywords" />
+							<include collection="constants" />		
+							<include collection="numbers" />
+							<include collection="regex" />
+							<include collection="operators" />
+							<include collection="variables" />
+							<include collection="punctuation" />
+						</subzones>
+					</capture>
+					<capture number="4" name="keyword.control"/>
+					<capture number="5" name="punctuation"/>
+				</starts-with>
+				<ends-with>
+					<expression>(break)(;?)|(?:(?=\s*(?:case|default|})))</expression>
+					<capture number="1" name="keyword.control"/>
+					<capture number="2" name="punctuation.statement.terminator"/>
+				</ends-with>
+				<subzones>
+					<include collection="item-blocks" />
+					<include syntax="self" />
+				</subzones>
+			</zone>
+		</collection>
+		
+		<collection name="item-blocks">
+			<zone name="x-item-block">
+				<starts-with>
+					<expression>\{</expression>
+					<capture number="0" name="punctuation.brace.curly.open"/>
+				</starts-with>
+				<ends-with>
+					<expression>\}</expression>
+					<capture number="0" name="punctuation.brace.curly.close"/>
+				</ends-with>
+				<subzones>
+					<include collection="item-blocks" />
+					<include syntax="self" />
+				</subzones>
+			</zone>
+		</collection>
+		
+		<!--Keywords-->
+		<collection name="keywords">
+			<zone name="keyword.storage.type">
+				<expression>\bfunction\b</expression>
+			</zone>
+			<zone name="keyword.control">
+				<expression>\b(break|case|catch|continue|default|do|else if|else|finally|for|if|return|switch|throw|try|void|while)\b</expression>
+			</zone>
+			<zone name="keyword.operator">
+				<expression>\b(delete|in|instanceof|typeof|with)\b</expression>
+			</zone>
+			<zone name="keyword.operator.new">
+				<expression>\bnew\b</expression>
+			</zone>
+			<zone name="keyword.reserved">
+				<expression>\b(abstract|boolean|byte|char|class|const|debugger|double|enum|export|extends|final|float|goto|implements|import|int|interface|long|native|package|private|protected|public|short|static|synchronized|throws|transient|volatile)\b</expression>
+			</zone>
+		</collection>
+		
+		<!--Constants-->
+		<collection name="constants">
+			<zone name="constant.numeric.infinity">
+				<expression>\b(Infinity)\b</expression>
+			</zone>
+			<zone name="constant.language.undefined">
+				<expression>\b(undefined|NaN)\b</expression>
+			</zone>
+			<include collection="json-constants" />
+		</collection>
+		
+		<collection name="json-constants">
+			<zone name="constant.language.boolean.true">
+				<expression>\btrue\b</expression>
+			</zone>
+			<zone name="constant.language.boolean.false">
+				<expression>\bfalse\b</expression>
+			</zone>
+			<zone name="constant.language.null">
+				<expression>\bnull\b</expression>
+			</zone>
+		</collection>
+		
+		<!--Numbers-->
+		<collection name="numbers">
+			<zone name="constant.numeric.octal">
+				<expression>\b0[0-7]+\b</expression>
+			</zone>
+			<zone name="constant.numeric.hexadecimal">
+				<expression>\b0(x|X)[0-9a-fA-F]+\b</expression>
+			</zone>
+			<include collection="json-numbers" />
+		</collection>
+		
+		<collection name="json-numbers">
+			<zone name="constant.numeric.float">
+				<!--Equivalent: .0001, 0.0001, 1e-4, 1.0e-4-->
+				<expression>\b((([0-9]+)?\.[0-9]+([eE]-?[0-9]+)?)|([0-9]+[eE]-?[0-9]+))\b</expression>
+			</zone>
+			<zone name="constant.numeric.integer">
+				<expression>\b[0-9]+\b</expression>
+			</zone>
+		</collection>
+		
+		<!--Regex Literals-->
+		<collection name="regex">
+			<zone name="regex.literal">
+				<starts-with>
+					<expression>(?&lt;=[=(:;,!?]|^|return)\s*(/)(?![/*+{}?])</expression>
+					<capture number="1" name="punctuation.definition.begin"/>
+				</starts-with>
+				<ends-with>
+					<expression>(/)([igm]*)</expression>
+					<capture number="1" name="punctuation.definition.end"/>
+					<capture number="2" name="regex.flags"/>
+				</ends-with>
+				<subzones>
+					<zone name="constant.character.escape">
+						<expression>(\\)(?:\\|/)</expression>
+						<capture number="1" name="punctuation.escape.backslash"/>
+					</zone>
+					<!--<include syntax="regex.search" />-->
+				</subzones>
+			</zone>
+		</collection>
+		
+		<!--Operators-->
+		<collection name="operators">
+			<zone name="operator.assignment">
+				<expression>\+=|-=|\*=|/=|%=|=</expression>
+			</zone>
+			<zone name="operator.unary">
+				<expression>\+\+|--</expression>
+			</zone>
+			<zone name="operator.binary">
+				<expression>\+|-|\*|/|%</expression>
+			</zone>
+			<zone name="operator.bitwise.binary">
+				<expression>&lt;&lt;|>>>|>></expression>
+			</zone>
+			<zone name="operator.comparison.binary">
+				<expression>===|==|!==|!=|>=|>|&lt;=|&lt;</expression>
+			</zone>
+			<zone name="operator.normalized-boolean">
+				<expression>!!</expression>
+			</zone>
+			<zone name="operator.logical.binary">
+				<expression>&amp;&amp;|\|\|</expression>
+			</zone>
+			<zone name="operator.logical">
+				<expression>!</expression>
+			</zone>
+			<zone name="operator.bitwise.binary">
+				<expression>&amp;|\||\^</expression>
+			</zone>
+			<zone name="operator.bitwise.unary">
+				<expression>~</expression>
+			</zone>
+		</collection>
+		
+		<!--Punctuation-->
+		<!--
+		FIXME: punctuation zones lead to MAJOR slowdowns when opening large files.  For instance, opening the Mootools Core+More file takes about 30 seconds; comment out the punctuation zones and it takes 2 seconds.
+		
+		This type of zone setup drops us back to 2 seconds, but doubles the number of punctuation zones for braces and completely breaks itemizers (the only way to re-enable itemizers is to switch to using brace:has-child(round.open) and similar, which pumps the time to open the file up to 45 seconds):
+		
+		<zone name="punctuation.brace">
+			<expression>(\{)|(\}(?:;|,)?)|(\[)|(\](?:;|,)?)</expression>
+			<capture number="1" name="curly.open"/>
+			<capture number="2" name="curly.close"/>
+			<capture number="3" name="square.open"/>
+			<capture number="4" name="square.close"/>
+		</zone>
+		
+		Given the drastic swings in initial parsing time for the file (with such a small change, and MORE zones in the document than before), I think this might be a problem internal to Espresso. Need to talk to Jan about it.
+		-->
+		
+		<collection name="punctuation">
+			<include collection="json-punctuation" />
+			
+			<zone name="punctuation.delimiter.period">
+				<expression>\.</expression>
+			</zone>
+			<zone name="punctuation.brace.round.open">
+				<expression>\(</expression>
+			</zone>
+			<zone>
+				<expression>(\()|(\)(?:;|(,))?)</expression>
+				<capture number="1" name="punctuation.brace.round.open"/>
+				<capture number="2" name="punctuation.brace.round.close"/>
+				<capture number="3" name="punctuation.delimiter.comma"/>
+			</zone>
+			<zone name="punctuation.questionmark">
+				<expression>\?</expression>
+			</zone>
+			<zone name="punctuation.statement.terminator">
+				<expression>\;</expression>
+			</zone>
+		</collection>
+		
+		<collection name="json-punctuation">
+			<zone name="punctuation.delimiter.comma">
+				<expression>,</expression>
+			</zone>
+			<zone>
+				<expression>(\{)|(\}(?:;|(,))?)|(\[)|(\](?:;|(,))?)</expression>
+				<capture number="1" name="punctuation.brace.curly.open"/>
+				<capture number="2" name="punctuation.brace.curly.close"/>
+				<capture number="3" name="punctuation.delimiter.comma"/>
+				<capture number="4" name="punctuation.brace.square.open"/>
+				<capture number="5" name="punctuation.brace.square.close"/>
+				<capture number="6" name="punctuation.delimiter.comma"/>
+			</zone>
+			<zone name="punctuation.colon">
+				<expression>:</expression>
+			</zone>
+		</collection>
+		
+		<!--Variables-->
+		<collection name="variables">
+			<!--Properties (quoted forms defined in strings collection)-->
+			<zone>
+				<expression>(([a-zA-Z_$][\w$]*)\s*(:))</expression>
+				<capture number="1" name="variable.property.x-assignment"/>
+				<capture number="2" name="name"/>
+				<capture number="3" name="operator.assignment"/>
+			</zone>
+			<!--Variable assignment-->
+			<!-- We define special zones for variable assignments to allow the itemizers to easily capture anonymous functions assigned to specific variables as a named function (since they are equivalent, and otherwise we end up with a lot of anonymous functions depending on coding style) -->
+			<!-- The var keyword is included to allow the itemizers to be drag and dropped with predictable results -->
+			<zone>
+				<expression>((?:(var)\s+)?([a-zA-Z_$][\w$]*)\s*(=))(?!=)</expression>
+				<capture number="1" name="variable.x-assignment"/>
+				<capture number="2" name="keyword.storage.type"/>
+				<capture number="3" name="name"/>
+				<capture number="4" name="operator.assignment"/>
+			</zone>
+			<zone>
+				<expression>(([a-zA-Z_$][\w$.]+)\s*(=))(?!=)</expression>
+				<capture number="1" name="variable.x-assignment"/>
+				<capture number="2" name="accessor-path.name">
+					<subzones>
+						<include collection="variables" />
+					</subzones>
+				</capture>
+				<capture number="3" name="operator.assignment"/>
+			</zone>
+			<!--Function Invocation-->
+			<zone>
+				<expression>(\.)([a-zA-Z_$][\w$]*)\s*(\()</expression>
+				<capture number="1" name="punctuation.delimiter.period"/>
+				<capture number="2" name="variable.function.method"/>
+				<capture number="3" name="punctuation.brace.round.open"/>
+			</zone>
+			<zone>
+				<expression>([a-zA-Z_$][\w$]*)\s*(\()</expression>
+				<capture number="1" name="variable.function"/>
+				<capture number="2" name="punctuation.brace.round.open"/>
+			</zone>
+			<!--Support variables-->
+			<zone name="support.variable.class.built-in">
+				<expression>\b(Array|Boolean|Date|Function|Math|Number|Object|RegExp|String)\b</expression>
+			</zone>
+			<zone name="support.variable.DOM.built-in">
+				<expression>\b(document|history|location|screen|window|self|top|parent)\b</expression>
+			</zone>
+			<zone name="support.variable.firebug.built-in">
+				<expression>\bconsole\b</expression>
+			</zone>
+			<!--Standard variables and accessors-->
+			<zone>
+				<expression>(\.)([a-zA-Z_$][\w$]*)</expression>
+				<capture number="1" name="punctuation.delimiter.period"/>
+				<capture number="2" name="variable.property"/>
+			</zone>
+			<!-- Var keyword; included here instead of keywords collection so that it doesn't conflict with variable assignment definitions -->
+			<zone name="keyword.storage.type">
+				<expression>\bvar\b</expression>
+			</zone>
+			<zone name="keyword.variable.language">
+				<expression>\b(super|this)\b</expression>
+			</zone>
+			<zone>
+				<expression>[a-zA-Z_$][\w$]*</expression>
+				<capture number="0" name="variable"/>
+			</zone>
+		</collection>
+	</library>
+</syntax>

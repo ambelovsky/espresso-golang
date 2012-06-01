@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<itemizer>
+	<!-- function myFunction (...) { ... } -->
+	<recipe name="golang.function.named">
+		<start-selector>golang function.definition:has-child(name:capture(name)):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- function myFunction (...) /*some comment*/ { ... } -->
+	<recipe name="golang.function.named.commented">
+		<start-selector>golang function.definition:has-child(name:capture(name)):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- variable = function(...) { ... } -->
+	<recipe name="golang.function.assignment">
+		<start-selector>golang function.x-assignment:has-child(name:capture(name)):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- variable = function(...) /*comment*/ { ... } -->
+	<recipe name="golang.function.assignment.commented">
+		<start-selector>golang function.x-assignment:has-child(name:capture(name)):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- "property": function(...) { ... } -->
+	<recipe name="golang.function.property">
+		<start-selector>golang function.x-assignment:has-child(string:has-child(name:capture(name))):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- "property": function(...) /*comment*/ { ... } -->
+	<recipe name="golang.function.property.commented">
+		<start-selector>golang function.x-assignment:has-child(string:has-child(name:capture(name))):capture(itemizer-firstused) + brace.round.open ~ brace.round.close + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- function() { ... } -->
+	<recipe name="golang.function.anonymous">
+		<class>ESJSAnonymousFunctionItem</class>
+		<start-selector>golang function.definition.anonymous:capture(itemizer-firstused) + brace.round.open ~ brace.round.close + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- function() /*comment*/ { ... } -->
+	<recipe name="golang.function.anonymous.commented">
+		<class>ESJSAnonymousFunctionItem</class>
+		<start-selector>golang function.definition.anonymous:capture(itemizer-firstused) + brace.round.open ~ brace.round.close + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- switch ( ... ) { ... } -->
+	<recipe name="golang.block.control.switch">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='switch']:capture(itemizer-firstused) + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- switch ( ... ) /* coment */ { ... } -->
+	<recipe name="golang.block.control.switch">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='switch']:capture(itemizer-firstused) + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters) + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- case 'stuff': ... -->
+	<recipe name="golang.block.control.case">
+		<class>ESJSChunkBlockItem</class>
+		<selector>golang x-item-block.case</selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- if (...) { ... } -->
+	<recipe name="golang.block.control">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control:capture(itemizer-firstused) + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- if (...) /* comment */ { ... } -->
+	<recipe name="golang.block.control">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control:capture(itemizer-firstused) + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters) + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- else { ... } -->
+	<recipe name="golang.block.control.generic">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='else']:capture(itemizer-firstused) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<!-- else /* comment */ { ... } -->
+	<recipe name="golang.block.control.generic">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='else']:capture(itemizer-firstused) + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- do { ... } while(...) -->
+	<recipe name="golang.block.control.do-while">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='do']:capture(itemizer-firstused) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close + keyword.control[text='while'] + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters)</end-selector>
+	</recipe>
+	<!-- do /* comment */ { ... } while(...) -->
+	<recipe name="golang.block.control.do-while">
+		<class>ESJSControlBlockItem</class>
+		<start-selector>golang keyword.control[text='do']:capture(itemizer-firstused) + comment + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close + keyword.control[text='while'] + brace.round.open:capture(open-parameters) ~ brace.round.close:capture(close-parameters)</end-selector>
+	</recipe>
+	
+	<!-- var something = { ... } -->
+	<!-- Object and array literals are somewhat specific to Javascript, so these are tied specifically to the golang syntax -->
+	<recipe name="golang.literal.object">
+		<class>ESJSLiteralObjectItem</class>
+		<start-selector>golang variable.x-assignment:has-child(name:capture(name)):capture(itemizer-firstused) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<recipe name="golang.literal.object.quoted">
+		<class>ESJSLiteralObjectItem</class>
+		<start-selector>golang variable.x-assignment:has-child(string:has-child(name:capture(name))):capture(itemizer-firstused) + brace.curly.open</start-selector>
+		<end-selector>golang brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- var something = [ ... ] -->
+	<recipe name="golang.literal.array">
+		<class>ESJSLiteralArrayItem</class>
+		<start-selector>golang variable.x-assignment:has-child(name:capture(name)):capture(itemizer-firstused) + brace.square.open</start-selector>
+		<end-selector>golang brace.square.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	<recipe name="golang.literal.array.quoted">
+		<class>ESJSLiteralArrayItem</class>
+		<start-selector>golang variable.x-assignment:has-child(string:has-child(name:capture(name))):capture(itemizer-firstused) + brace.square.open</start-selector>
+		<end-selector>golang brace.square.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- [ ... ] -->
+	<recipe name="golang.literal.array.anonymous">
+		<class>ESJSLiteralArrayItem</class>
+		<start-selector>golang *:not(brace.close, variable) + brace.square.open</start-selector>
+		<end-selector>golang brace.square.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- { ... } -->
+	<recipe name="golang.block.anonymous">
+		<class>ESCodeBlockItem</class>
+		<start-selector>golang > brace.curly.open, golang *:not(x-item-block) brace.curly.open</start-selector>
+		<end-selector>golang > brace.curly.close, golang *:not(x-item-block) brace.curly.close</end-selector>
+		<subrecipes>
+			<include-root-recipes/>
+		</subrecipes>
+	</recipe>
+	
+	<!-- //! My Documentation Comment -->
+	<recipe name="golang.comment">
+	    <class>ESCommentItem</class>
+	    <selector>golang comment.documentation, golang comment.bookmark, golang comment.task</selector>
+	    <subrecipes>
+	    	<recipe name="golang.comment.link">
+	    		<class>ESJSMarkupLink</class>
+	    		<selector>golang comment markup.link</selector>
+	    	</recipe>
+	    </subrecipes>
+	</recipe>
+	
+</itemizer>

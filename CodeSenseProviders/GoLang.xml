@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codesense>
+	
+	<!-- Variables and functions -->
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,variable,regex,regex *)</selector>
+		<completions>io.7th.golang.root-variables</completions>
+		<completions>io.7th.golang.root-methods</completions>
+		<completions>io.7th.golang.constants</completions>
+		<complete-match>(?&lt;!\.)\b[a-zA-Z]*</complete-match>
+	</provider>
+	
+	<!-- Global properties -->
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.global-properties</completions>
+		<complete-match capture="1">\.([a-zA-Z]*)</complete-match>
+	</provider>
+	
+	<!-- Object constructors -->
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.constructors</completions>
+		<complete-match capture="1">\bnew\s+([a-zA-Z]*)</complete-match>
+	</provider>
+	
+	<!-- TODO: This needs to change to support some form of variable substitution in the completion ID -->
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.action.properties</completions>
+		<complete-match capture="1">\baction\.(\w*)</complete-match>
+	</provider>
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.context.properties</completions>
+		<complete-match capture="1">\bcontext\.(\w*)</complete-match>
+	</provider>
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.lineStorage.properties</completions>
+		<complete-match capture="1">\blineStorage\.(\w*)</complete-match>
+	</provider>
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.syntaxTree.properties</completions>
+		<complete-match capture="1">\bsyntaxTree\.(\w*)</complete-match>
+	</provider>
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.itemizer.properties</completions>
+		<complete-match capture="1">\bitemizer\.(\w*)</complete-match>
+	</provider>
+	<provider>
+		<selector>golang, golang *:not(string,string *,comment,regex,regex *)</selector>
+		<completions>io.7th.golang.textPreferences.properties</completions>
+		<complete-match capture="1">\btextPreferences\.(\w*)</complete-match>
+	</provider>
+</codesense>
